@@ -6,15 +6,17 @@ import java.util.ArrayList;
 
 public interface SqlInterface extends AutoCloseable
 {
-    boolean connect(String url, String username, String password) throws SQLException, Exception;
+    boolean connect(String url, String username, String password) throws  Exception;
 
-    boolean create(String tableName, String[] columns) throws SQLException, Exception;
+    boolean create(String tableName, String[] columns) throws Exception;
 
-    boolean create(String tableName, ArrayList<String[]> columns) throws SQLException, Exception;
+    boolean create(String tableName, ArrayList<String[]> columns) throws Exception;
 
-    int insert(String tableName, String columns, String[] values) throws SQLException, Exception;
+    int insert(String tableName, String columns, String[] values) throws Exception;
 
-    int insert(String tableName, String[] values) throws SQLException, Exception;
+    int insert(String tableName, String[] values) throws Exception;
+
+    int insert(String tableName, ArrayList<String[]> values) throws Exception;
 
     int updateRows(String tableName, String column, String conditionColumn, String[] conditions, String[] values);
 

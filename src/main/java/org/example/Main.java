@@ -2,19 +2,22 @@ package org.example;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
 
-        SpringApplication.run(Main.class, args);
+        //SpringApplication.run(Main.class, args);
+
+
+
         ArrayList<String[]> dataCSV = new ArrayList<>();
         String[] nextRecord;
 
@@ -25,7 +28,6 @@ public class Main {
             while ((nextRecord = csvReader.readNext()) != null) {
                 dataCSV.add(nextRecord);
             }
-
         }
         catch (CsvValidationException | IOException e) {
             e.printStackTrace();
@@ -39,7 +41,7 @@ public class Main {
         try {
             dbTable.connect("jdbc:postgresql://localhost:5432/postgres", "postgres", "postgres");
             dbTable.create(name, dataCSV);
-
+            dbTable.insert(name, dataCSV);
             dbTable.close();
         }
 
