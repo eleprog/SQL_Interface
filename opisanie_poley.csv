@@ -1,0 +1,6 @@
+prod_article,"INT","PRIMARY KEY"
+prod_name,"TEXT"
+prod_type,"TEXT"
+prod_amount,"TEXT"
+prod_price,"INT","NOT NULL"
+prod_discount,"INT"
