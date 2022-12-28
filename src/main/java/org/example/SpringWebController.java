@@ -9,7 +9,7 @@ public class SpringWebController {
 
     @RequestMapping("/name")
     public productObj greeting(@RequestParam(value="data", required=false, defaultValue="Spring") String data){
-        return new productObj(data);
+        return new productObj("shop", data);
     }
 
 }

@@ -1,21 +1,28 @@
 package org.example;
 
 public class productObj {
-    private String data;
 
-    productObj(String dat) {
-        this.data = dat;
+    private final String tableName = "shop";
+    private String amount;
+    private String price;
+    private String discount;
+
+
+    productObj(String tableName, String pk) {
+        String[] columns = null;
+        String[][] data = SqlTerminal.getInstance().select(tableName, columns);
+
     }
 
-    public String getData() {
-        return data;
+    public String getAmount() {
+        return amount;
     }
 
-    public String get() {
-        return "data";
+    public String getPrice() {
+        return price;
     }
 
-    public String getData2() {
-        return "data";
+    public String getDiscount() {
+        return discount;
     }
 }
