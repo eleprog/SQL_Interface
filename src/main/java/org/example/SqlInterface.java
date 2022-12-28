@@ -26,7 +26,8 @@ public interface SqlInterface extends AutoCloseable
 
     boolean updateColumns(String tableName, String[] columns, String[] values, String condition);
 
-    String[][] select(String[] columns);
+
+    String[][] select(String tableName, String[] columns);
 
     boolean delete(String tableName) throws SQLException;
 

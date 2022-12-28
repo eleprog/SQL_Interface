@@ -57,12 +57,13 @@ public class SqlTerminal implements SqlInterface
 
         for(int i = 0; i < columns.size(); i++) {
             String[] tmp = columns.get(i);
+
             for (int j = 0; j < tmp.length; j++) {
                 if (!tmp[j].equals("PK")) {
-                    Buff += tmp[j];
-
-                    if (j < tmp.length - 1)
+                    if (j > 0)
                         Buff += " ";
+
+                    Buff += tmp[j];
                 }
                 else
                     primaryKeyList.add(tmp[0]);
@@ -156,8 +157,9 @@ public class SqlTerminal implements SqlInterface
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+
     @Override
-    public String[][] select(String[] columns) {
+    public String[][] select(String tableName, String[] columns) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
