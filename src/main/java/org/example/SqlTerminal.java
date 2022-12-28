@@ -5,62 +5,86 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SqlTerminal implements SqlInterface
 {
+    private static SqlTerminal instance = null;
     private Connection conn;
     private Statement statement;
     private boolean printConsoleFlag = true;
 
-    void SqlTerminal() {
+    private SqlTerminal() {
 
     }
 
     @Override
-    public boolean connect(String url, String username, String password) throws Exception {
-        conn = DriverManager.getConnection(url, username, password);
-        if((conn = DriverManager.getConnection(url, username, password)) == null)
+    public boolean connect(String url, String username, String password) {
+        try {
+            conn = DriverManager.getConnection(url, username, password);
+            statement = conn.createStatement();
+            return true;
+        }
+        catch (SQLException e) {
             return false;
-
-        if((statement = conn.createStatement()) == null)
-            return false;
-
-        return true;
+        }
     }
 
     @Override
     public boolean create(String tableName, String[] columns) throws Exception {
-        int maxIndexParam = columns.length - 1;
+        int len = columns.length;
         String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
 
-        for(int i = 0; i < maxIndexParam; i++)
-            Buff += columns[i] + ", ";
-        Buff += columns[maxIndexParam] + ");";
+        for(int i = 0; i < len; i++) {
+            Buff += columns[i];
 
-        if(printConsoleFlag) System.out.println(Buff);
+            if(i != len - 1)
+                Buff += ", ";
+            else
+                Buff += ");";
+        }
+
+        if(printConsoleFlag)
+            System.out.println(Buff);
 
         return statement.execute(Buff);
     }
 
     @Override
-    public boolean create(String tableName, ArrayList<String[]> columns) throws Exception {
-        int maxIndexParam = columns.size();
+    public boolean create(String tableName, List<String[]> columns) throws Exception {
         String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
+        List<String> primaryKeyList = new ArrayList();
 
-        for(int i = 0; i < maxIndexParam; i++) {
+        for(int i = 0; i < columns.size(); i++) {
             String[] tmp = columns.get(i);
-            for(String word: tmp)
-                Buff += word + " ";
-            Buff = Buff.trim();
-            if(i < maxIndexParam - 1)
-                Buff +=", ";
-            else {
-                Buff = Buff.trim();
-                Buff += ");";
+            for (int j = 0; j < tmp.length; j++) {
+                if (!tmp[j].equals("PK")) {
+                    Buff += tmp[j];
+
+                    if (j < tmp.length - 1)
+                        Buff += " ";
+                }
+                else
+                    primaryKeyList.add(tmp[0]);
             }
+            if (i < columns.size() - 1)
+                Buff += ", ";
         }
 
-        if(printConsoleFlag) System.out.println(Buff);
+        if(!primaryKeyList.isEmpty()) {
+            Buff += ", PRIMARY KEY (";
+            for(int j = 0; j < primaryKeyList.size(); j++) {
+                Buff += primaryKeyList.get(j);
+                if(j < primaryKeyList.size() - 1)
+                    Buff += ", ";
+                else
+                    Buff += ")";
+            }
+        }
+        Buff += ");";
+
+        if(printConsoleFlag)
+            System.out.println(Buff);
 
         return statement.execute(Buff);
     }
@@ -72,7 +96,8 @@ public class SqlTerminal implements SqlInterface
             Buff += values[i] + ',';
         Buff += values[values.length - 1] + ");";
 
-        if(printConsoleFlag) System.out.println(Buff);
+        if(printConsoleFlag)
+            System.out.println(Buff);
 
         statement.execute(Buff);
         return 0;
@@ -87,17 +112,18 @@ public class SqlTerminal implements SqlInterface
             Buff += values[i] + ',';
         Buff += values[maxIndexParam] + ");";
 
-        if(printConsoleFlag) System.out.println(Buff);
+        if(printConsoleFlag)
+            System.out.println(Buff);
 
         statement.execute(Buff);
         return 0;
     }
 
     @Override
-    public int insert(String tableName, ArrayList<String[]> values) throws Exception {
+    public int insert(String tableName, List<String[]> values) throws Exception {
 
         int maxIndexParam = values.size();
-        String Buff = "INSERT INTO " + tableName + " VALUES ";
+        String Buff = "INSERT INTO " + tableName + " VALUES " ;
 
         for(int i = 0; i < maxIndexParam; i++) {
             String[] tmp = values.get(i);
@@ -113,10 +139,10 @@ public class SqlTerminal implements SqlInterface
                     Buff +=");";
             }
         }
+        if(printConsoleFlag)
+            System.out.println(Buff);
 
-        if(printConsoleFlag) System.out.println(Buff);
-
-        //statement.execute(Buff);
+        statement.execute(Buff);
         return 0;
     }
 
@@ -136,8 +162,15 @@ public class SqlTerminal implements SqlInterface
     }
 
     @Override
-    public boolean delete(String tableName) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean delete(String tableName) throws SQLException {
+        String Buff = "DROP TABLE IF EXISTS " + tableName + ";";
+
+        if(printConsoleFlag)
+            System.out.println(Buff);
+
+        statement.execute(Buff);
+
+        return false;
     }
 
     @Override
@@ -154,6 +187,14 @@ public class SqlTerminal implements SqlInterface
     public void close() throws Exception {
         statement.close();
         conn.close();
+    }
+
+
+    static public SqlTerminal getInstance() {
+        if(instance == null)
+            instance = new SqlTerminal();
+
+        return instance;
     }
 }
 /*  UPDATE config

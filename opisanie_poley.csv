@@ -1,4 +1,4 @@
-prod_article,"INT","PRIMARY KEY"
+prod_article,"INT","PK"
 prod_name,"TEXT"
 prod_type,"TEXT"
 prod_amount,"TEXT"
