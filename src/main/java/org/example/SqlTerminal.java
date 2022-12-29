@@ -1,9 +1,6 @@
 package org.example;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,8 +156,40 @@ public class SqlTerminal implements SqlInterface
 
 
     @Override
-    public String[][] select(String tableName, String[] columns) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<String[]> select(String tableName, String[] columns) {
+        String Buff = "SELECT * FROM " + tableName + " WHERE ";
+
+        for(int i = 0; i < columns.length; i++) {
+            Buff += columns[i];
+            if(i < columns.length - 1)
+                Buff += " AND ";
+            else
+                Buff += ";";
+        }
+        if(printConsoleFlag)
+            System.out.println(Buff);
+
+
+        ArrayList<String[]> resultOutput = new ArrayList<>();
+        try {
+            ResultSet resultInput = statement.executeQuery(Buff);
+
+            int len = resultInput.getMetaData().getColumnCount();
+            while(resultInput.next()) {
+                String[] line = new String[len];
+                for (int j = 1; j <= len; j++)
+                    line[j - 1] = resultInput.getString(j);
+                resultOutput.add(line);
+            }
+
+            if(resultOutput.isEmpty())
+                return null;
+
+            return resultOutput;
+        }
+        catch (SQLException e) {
+            return null; //new String[][] {{"","","err","err","err"}};
+        }
     }
 
     @Override

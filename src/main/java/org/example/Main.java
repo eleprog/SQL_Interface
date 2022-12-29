@@ -19,7 +19,7 @@ public class Main {
             dbTable.create(name, fileToList.csvReadToList("opisanie_poley.csv"));
             dbTable.insert(name, fileToList.csvReadToList("soderjimoe_poley.csv"));
 
-            dbTable.close();
+            //dbTable.close();
         }
 
         catch (SQLException e) {
