@@ -50,7 +50,7 @@ public class SqlTerminal implements SqlInterface
     @Override
     public boolean create(String tableName, List<String[]> columns) throws Exception {
         String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
-        List<String> primaryKeyList = new ArrayList();
+        List<String> primaryKeyList = new ArrayList<>();
 
         for(int i = 0; i < columns.size(); i++) {
             String[] tmp = columns.get(i);
@@ -154,10 +154,24 @@ public class SqlTerminal implements SqlInterface
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-
     @Override
-    public List<String[]> select(String tableName, String[] columns) {
-        String Buff = "SELECT * FROM " + tableName + " WHERE ";
+    public List<String[]> select(String tableName, String[] targetColumns, String[] columns) {
+        // String Buff = "SELECT * FROM " + tableName + " WHERE ";
+
+        String Buff = "SELECT ";
+        if(targetColumns == null)
+            Buff += "* ";
+
+        for(int i = 0; i < targetColumns.length; i++) {
+            Buff += targetColumns[i];
+
+            if (i < targetColumns.length - 1)
+                Buff += ", ";
+            else
+                Buff += " ";
+        }
+
+        Buff += "FROM " + tableName + " WHERE ";
 
         for(int i = 0; i < columns.length; i++) {
             Buff += columns[i];
