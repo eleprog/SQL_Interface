@@ -17,11 +17,11 @@ public class SqlTerminal implements SqlInterface
 
     @Override
     /*  Подключение к базе данных
-    *
-    *   url      - ссылка на базу данных
-    *   username - имя учётной записи
-    *   password - пароль
-    */
+     *
+     *  url      - ссылка на базу данных
+     *  username - имя учётной записи
+     *  password - пароль
+     */
     public boolean connect(String url, String username, String password) {
         try {
             conn = DriverManager.getConnection(url, username, password);
@@ -36,10 +36,10 @@ public class SqlTerminal implements SqlInterface
     @Override
     /*  Создание таблицы в базе данных
      *
-     *   tableName - название таблицы
-     *   columns - список имён и параметров полей
+     *  tableName - название таблицы
+     *  columns - список имён и параметров полей
      */
-    public boolean create(String tableName, List<String[]> columns) throws Exception {
+    public boolean create(String tableName, List<String[]> columns) {
         String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " ("; // переменная для формирования SQL запроса
         List<String> primaryKeyList = new ArrayList<>();                // список полей для добавления в primary key
 
@@ -77,7 +77,14 @@ public class SqlTerminal implements SqlInterface
         if(printConsoleFlag)
             System.out.println(Buff);
 
-        return statement.execute(Buff);
+        try {
+            statement.execute(Buff);
+        }
+        catch(Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -87,7 +94,7 @@ public class SqlTerminal implements SqlInterface
      *  columns     - массив полей в которые записываются данные
      *  values      - список значений полей для добавления
      */
-    public int insert(String tableName, String[] columns, List<String[]> values) throws Exception {
+    public int insert(String tableName, String[] columns, List<String[]> values) {
         String Buff = "INSERT INTO " + tableName + " (" ;   // переменная для формирования SQL запроса
 
         // формирование запроса для полей которые добавляются
@@ -121,8 +128,12 @@ public class SqlTerminal implements SqlInterface
         if(printConsoleFlag)
             System.out.println(Buff);
 
-        statement.execute(Buff);
-        return 0;
+        try {
+            return statement.executeUpdate(Buff);
+        }
+        catch(Exception e) {
+            return -1;
+        }
     }
 
     @Override
@@ -199,7 +210,7 @@ public class SqlTerminal implements SqlInterface
     }
 
     @Override
-    /*  удаление таблицы
+    /*  Удаление таблицы
      *
      *  tableName   - название таблицы
      */
@@ -220,8 +231,39 @@ public class SqlTerminal implements SqlInterface
     }
 
     @Override
-    public boolean addColumn(String tableName, String column) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    /*  Добавление столбца
+     *
+     *  tableName   - название таблицы
+     *  column      - название и параметры поля
+     *
+     *  return:
+     *      true - столбец добавлен
+     *      false - столбец не добавлен
+     */
+    public boolean addColumn(String tableName, String[] column){
+        String Buff = "ALTER TABLE " + tableName + " ADD COLUMN ";
+
+        // формирование запроса для создания полей
+        for (int i = 0; i < column.length; i++) {
+            Buff += column[i];
+
+            if (i < column.length - 1)
+                Buff += " ";
+        }
+        Buff += ";";
+
+        // печать SQL запроса в консоль
+        if(printConsoleFlag)
+            System.out.println(Buff);
+
+        try {
+            statement.execute(Buff);
+        }
+        catch(Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -230,7 +272,7 @@ public class SqlTerminal implements SqlInterface
         conn.close();
     }
 
-    // метод реализации singletone
+    // Метод реализации singletone
     static public SqlTerminal getInstance() {
         if(instance == null)
             instance = new SqlTerminal();

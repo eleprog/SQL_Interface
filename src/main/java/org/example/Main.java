@@ -18,7 +18,14 @@ public class Main {
 
             dbTable.delete(name);
             dbTable.create(name, fileToList.csvReadToList("opisanie_poley.csv"));
+
             dbTable.insert(name, columnsToAdd, fileToList.csvReadToList("soderjimoe_poley.csv"));
+
+            String[] columnAdd1 = {"prod_type","INT"};
+            System.out.println(dbTable.addColumn(name, columnAdd1));
+
+            String[] columnAdd2 = {"id","INT"};
+            System.out.println(dbTable.addColumn(name, columnAdd2));
 
             //dbTable.close();
         }

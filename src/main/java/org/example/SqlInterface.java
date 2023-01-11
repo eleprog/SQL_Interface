@@ -8,9 +8,9 @@ public interface SqlInterface extends AutoCloseable
 {
     boolean connect(String url, String username, String password);
 
-    boolean create(String tableName, List<String[]> columns) throws Exception;
+    boolean create(String tableName, List<String[]> columns);
 
-    int insert(String tableName, String columns[], List<String[]> values) throws Exception;
+    int insert(String tableName, String columns[], List<String[]> values);
 
     int updateRows(String tableName, String column, String conditionColumn, String[] conditions, String[] values);
 
@@ -22,5 +22,5 @@ public interface SqlInterface extends AutoCloseable
 
     int deleteRows(String tableName, String condition);
 
-    boolean addColumn(String tableName, String column);
+    boolean addColumn(String tableName, String[] column);
 }
