@@ -8,18 +8,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
+// Класс для обработки .csv файлов
 public class fileToList {
 
-    static public List<String[]> csvReadToList(String path) throws IOException, CsvValidationException {
+    /* Преобразование файла в список массивов строк
+     *
+     * path - путь к файлу
+     */
+    static public List<String[]> csvReadToList(String path) {
         String[] nextRecord;
         List<String[]> data = new ArrayList<>();
 
-        CSVReader csvReader = new CSVReader(new FileReader(path));
+        try {
+            CSVReader csvReader = new CSVReader(new FileReader(path));
 
-        while ((nextRecord = csvReader.readNext()) != null)
-            data.add(nextRecord);
+            while ((nextRecord = csvReader.readNext()) != null)
+                data.add(nextRecord);
 
-        return data;
+            return data;
+        }
+        catch(Exception e) {
+            return new ArrayList<>();
+        }
     }
 
 

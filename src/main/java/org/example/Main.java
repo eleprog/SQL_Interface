@@ -11,13 +11,14 @@ public class Main {
 
         SqlTerminal dbTable = SqlTerminal.getInstance();
         final String name = "shop";
+        final String[] columnsToAdd = {"prod_name", "prod_type", "prod_amount", "prod_price", "prod_discount"};
 
         try {
             dbTable.connect("jdbc:postgresql://localhost:5432/postgres", "postgres", "postgres");
 
             dbTable.delete(name);
             dbTable.create(name, fileToList.csvReadToList("opisanie_poley.csv"));
-            dbTable.insert(name, fileToList.csvReadToList("soderjimoe_poley.csv"));
+            dbTable.insert(name, columnsToAdd, fileToList.csvReadToList("soderjimoe_poley.csv"));
 
             //dbTable.close();
         }

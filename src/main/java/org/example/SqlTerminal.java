@@ -9,13 +9,19 @@ public class SqlTerminal implements SqlInterface
     private static SqlTerminal instance = null;
     private Connection conn;
     private Statement statement;
-    private boolean printConsoleFlag = true;
+    private boolean printConsoleFlag = true; // true - печатать SQL запросы в консоль, false - не печатать
 
     private SqlTerminal() {
 
     }
 
     @Override
+    /*  Подключение к базе данных
+    *
+    *   url      - ссылка на базу данных
+    *   username - имя учётной записи
+    *   password - пароль
+    */
     public boolean connect(String url, String username, String password) {
         try {
             conn = DriverManager.getConnection(url, username, password);
@@ -28,33 +34,18 @@ public class SqlTerminal implements SqlInterface
     }
 
     @Override
-    public boolean create(String tableName, String[] columns) throws Exception {
-        int len = columns.length;
-        String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
-
-        for(int i = 0; i < len; i++) {
-            Buff += columns[i];
-
-            if(i != len - 1)
-                Buff += ", ";
-            else
-                Buff += ");";
-        }
-
-        if(printConsoleFlag)
-            System.out.println(Buff);
-
-        return statement.execute(Buff);
-    }
-
-    @Override
+    /*  Создание таблицы в базе данных
+     *
+     *   tableName - название таблицы
+     *   columns - список имён и параметров полей
+     */
     public boolean create(String tableName, List<String[]> columns) throws Exception {
-        String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
-        List<String> primaryKeyList = new ArrayList<>();
+        String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " ("; // переменная для формирования SQL запроса
+        List<String> primaryKeyList = new ArrayList<>();                // список полей для добавления в primary key
 
+        // формирование запроса для создания полей
         for(int i = 0; i < columns.size(); i++) {
             String[] tmp = columns.get(i);
-
             for (int j = 0; j < tmp.length; j++) {
                 if (!tmp[j].equals("PK")) {
                     if (j > 0)
@@ -69,6 +60,7 @@ public class SqlTerminal implements SqlInterface
                 Buff += ", ";
         }
 
+        // создание запроса для primary key
         if(!primaryKeyList.isEmpty()) {
             Buff += ", PRIMARY KEY (";
             for(int j = 0; j < primaryKeyList.size(); j++) {
@@ -81,6 +73,7 @@ public class SqlTerminal implements SqlInterface
         }
         Buff += ");";
 
+        // печать SQL запроса в консоль
         if(printConsoleFlag)
             System.out.println(Buff);
 
@@ -88,42 +81,28 @@ public class SqlTerminal implements SqlInterface
     }
 
     @Override
-    public int insert(String tableName, String columns, String[] values) throws Exception {
-        String Buff = "INSERT INTO " + tableName + " (" + columns + ")" + " VALUES (";
-        for(int i = 0; i < values.length - 1; i++)
-            Buff += values[i] + ',';
-        Buff += values[values.length - 1] + ");";
+    /*  Добавление значений в базу данных
+     *
+     *  tableName   - название таблицы
+     *  columns     - массив полей в которые записываются данные
+     *  values      - список значений полей для добавления
+     */
+    public int insert(String tableName, String[] columns, List<String[]> values) throws Exception {
+        String Buff = "INSERT INTO " + tableName + " (" ;   // переменная для формирования SQL запроса
 
-        if(printConsoleFlag)
-            System.out.println(Buff);
+        // формирование запроса для полей которые добавляются
+        for(int i = 0; i < columns.length; i++) {
+            Buff += columns[i];
 
-        statement.execute(Buff);
-        return 0;
-    }
+            if(i < columns.length - 1)
+                Buff += ", ";
+            else
+                Buff += ") ";
+        }
 
-    @Override
-    public int insert(String tableName, String[] values) throws Exception {
-        int maxIndexParam = values.length - 1;
-        String Buff = "INSERT INTO " + tableName + " VALUES (";
-
-        for(int i = 0; i < maxIndexParam; i++)
-            Buff += values[i] + ',';
-        Buff += values[maxIndexParam] + ");";
-
-        if(printConsoleFlag)
-            System.out.println(Buff);
-
-        statement.execute(Buff);
-        return 0;
-    }
-
-    @Override
-    public int insert(String tableName, List<String[]> values) throws Exception {
-
-        int maxIndexParam = values.size();
-        String Buff = "INSERT INTO " + tableName + " VALUES " ;
-
-        for(int i = 0; i < maxIndexParam; i++) {
+        // формирование запроса для значений которые добавляются
+        Buff += "VALUES ";
+        for(int i = 0; i < values.size(); i++) {
             String[] tmp = values.get(i);
             Buff +="(";
             int tmpLen = tmp.length;
@@ -131,12 +110,14 @@ public class SqlTerminal implements SqlInterface
                 Buff += tmp[j];
                 if(j < tmpLen - 1)
                     Buff += ", ";
-                else if(i < maxIndexParam - 1)
+                else if(i < values.size() - 1)
                     Buff += "), ";
                 else
                     Buff +=");";
             }
         }
+
+        // печать SQL запроса в консоль
         if(printConsoleFlag)
             System.out.println(Buff);
 
@@ -155,40 +136,51 @@ public class SqlTerminal implements SqlInterface
     }
 
     @Override
-    public List<String[]> select(String tableName, String[] targetColumns, String[] columns) {
-        // String Buff = "SELECT * FROM " + tableName + " WHERE ";
+    /*  Получение данных из таблицы
+     *
+     *  tableName   - название таблицы
+     *  targetCol   - массив полей которые будут возвращены
+     *  conditions  - список условий
+     */
+    public List<String[]> select(String tableName, String[] targetCol, String[] conditions) {
+        String Buff = "SELECT ";    // переменная для формирования SQL запроса
 
-        String Buff = "SELECT ";
-        if(targetColumns == null)
+        // формирование запроса для полей которые будут возвращены
+        if(targetCol == null)
             Buff += "* ";
+        else {
+            for (int i = 0; i < targetCol.length; i++) {
+                Buff += targetCol[i];
 
-        for(int i = 0; i < targetColumns.length; i++) {
-            Buff += targetColumns[i];
-
-            if (i < targetColumns.length - 1)
-                Buff += ", ";
-            else
-                Buff += " ";
+                if (i < targetCol.length - 1)
+                    Buff += ", ";
+                else
+                    Buff += " ";
+            }
         }
 
+        // формирование запроса для условий
         Buff += "FROM " + tableName + " WHERE ";
-
-        for(int i = 0; i < columns.length; i++) {
-            Buff += columns[i];
-            if(i < columns.length - 1)
+        for(int i = 0; i < conditions.length; i++) {
+            Buff += conditions[i];
+            if(i < conditions.length - 1)
                 Buff += " AND ";
             else
                 Buff += ";";
         }
+
+        // печать SQL запроса в консоль
         if(printConsoleFlag)
             System.out.println(Buff);
 
 
-        ArrayList<String[]> resultOutput = new ArrayList<>();
+        ArrayList<String[]> resultOutput = new ArrayList<>(); // список для формирования return
+
+        // return полученных значений
         try {
             ResultSet resultInput = statement.executeQuery(Buff);
-
             int len = resultInput.getMetaData().getColumnCount();
+
             while(resultInput.next()) {
                 String[] line = new String[len];
                 for (int j = 1; j <= len; j++)
@@ -202,11 +194,15 @@ public class SqlTerminal implements SqlInterface
             return resultOutput;
         }
         catch (SQLException e) {
-            return null; //new String[][] {{"","","err","err","err"}};
+            return null;
         }
     }
 
     @Override
+    /*  удаление таблицы
+     *
+     *  tableName   - название таблицы
+     */
     public boolean delete(String tableName) throws SQLException {
         String Buff = "DROP TABLE IF EXISTS " + tableName + ";";
 
@@ -234,7 +230,7 @@ public class SqlTerminal implements SqlInterface
         conn.close();
     }
 
-
+    // метод реализации singletone
     static public SqlTerminal getInstance() {
         if(instance == null)
             instance = new SqlTerminal();
@@ -242,11 +238,3 @@ public class SqlTerminal implements SqlInterface
         return instance;
     }
 }
-/*  UPDATE config
- *   SET config_value = CASE config_name
- *                      WHEN 'name1' THEN 'value'
- *                      WHEN 'name2' THEN 'value2'
- *                      ELSE config_value
- *                      END
- *   WHERE config_name IN('name1', 'name2');
- */

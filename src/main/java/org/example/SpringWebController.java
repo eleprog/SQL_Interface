@@ -23,7 +23,6 @@ public class SpringWebController {
         for(int i = 0; i < dataStr.length / 2; i++)
             columns[i] = dataStr[i * 2] + " = '" + dataStr[i * 2 + 1] + "'";
 
-
         List<String[]> tableRows = SqlTerminal.getInstance().select(tableName, columnsTrgt, columns);
 
         Map<Integer, productObj> map = new HashMap();
@@ -31,7 +30,6 @@ public class SpringWebController {
         if(tableRows != null)
             for(int i = 0; i < tableRows.size(); i++)
                 map.put(i, new productObj(tableRows.get(i)));
-
 
         return map;
     }

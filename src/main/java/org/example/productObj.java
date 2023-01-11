@@ -1,15 +1,11 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class productObj {
     private String amount   = null;
     private String price    = null;
     private String discount = null;
 
     productObj(String[] data) {
-
         if(data != null) {
             amount      = data[0];
             price       = data[1];
