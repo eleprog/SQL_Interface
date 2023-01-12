@@ -12,9 +12,11 @@ import java.util.List;
 // Класс для обработки .csv файлов
 public class fileToList {
 
-    /* Преобразование файла в список массивов строк
+    /** Преобразование файла в список массивов строк
      *
-     * path - путь к файлу
+     * @param path путь к файлу
+     * @return возвращает список массивов строк
+     * (если произошла ошибка то возращается пустой список)
      */
     static public List<String[]> csvReadToList(String path) {
         String[] nextRecord;
@@ -32,9 +34,4 @@ public class fileToList {
             return new ArrayList<>();
         }
     }
-
-
-
-
-
 }

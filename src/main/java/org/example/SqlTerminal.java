@@ -4,8 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqlTerminal implements SqlInterface
-{
+public class SqlTerminal implements SqlInterface  {
+
     /** ссылка на единственный экземпляр класса SqlTerminal
      */
     private static SqlTerminal instance = null;
@@ -18,11 +18,12 @@ public class SqlTerminal implements SqlInterface
      */
     private boolean printConsoleFlag = true;
 
+
+
     /** для реализации singletone конструктор класса находится в зоне доступа private
      */
-    private SqlTerminal() {
+    private SqlTerminal() { }
 
-    }
 
     /**  Подключение к базе данных
      *
@@ -45,6 +46,7 @@ public class SqlTerminal implements SqlInterface
             return false;
         }
     }
+
 
     /**  Создание таблицы в базе данных
      *
@@ -97,13 +99,13 @@ public class SqlTerminal implements SqlInterface
         // отправление запроса в базу данных и вывод return
         try {
             statement.execute(Buff);
+            return true;
         }
         catch(Exception e) {
             return false;
         }
-
-        return true;
     }
+
 
     /**  Добавление значений в базу данных
      *
@@ -158,15 +160,76 @@ public class SqlTerminal implements SqlInterface
         }
     }
 
+    /**
+     *
+     * @param tableName
+
+     * @param conditions
+     * @param values
+     * @return
+     */
     @Override
-    public int updateRows(String tableName, String column, String conditionColumn, String[] conditions, String[] values) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int updateRow(String tableName, String columns[], String[] values, String[] conditions) {
+
+        return 0;
     }
 
+
     @Override
-    public boolean updateColumns(String tableName, String[] columns, String[] values, String condition) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int updateColumns(String tableName, String[] changesColumns, String[] condition) {
+
+        //         tableName         changesColumns     conditions
+        // "UPDATE Customers SET ContactName='Juan' WHERE Country='Mexico'";
+
+        String Buff = "UPDATE " + tableName + " SET ";    // переменная для формирования SQL запроса
+
+        for(int i = 0 ; i < changesColumns.length; i++) {
+            Buff += changesColumns[i];
+            if(i < changesColumns.length - 1)
+                Buff += ", ";
+        }
+
+        /*
+
+        // формирование запроса для полей которые будут возвращены
+        if(targetCol == null)
+            Buff += "* ";
+        else {
+            for (int i = 0; i < targetCol.length; i++) {
+                Buff += targetCol[i];
+
+                if (i < targetCol.length - 1)
+                    Buff += ", ";
+                else
+                    Buff += " ";
+            }
+        }
+
+        // формирование запроса для условий
+        Buff += "FROM " + tableName + " WHERE ";
+        for(int i = 0; i < conditions.length; i++) {
+            Buff += conditions[i];
+            if(i < conditions.length - 1)
+                Buff += " AND ";
+            else
+                Buff += ";";
+        }
+
+
+*/
+        // печать SQL запроса в консоль
+        if(printConsoleFlag)
+            System.out.println(Buff);
+
+        // отправление запроса в базу данных и вывод return
+        try {
+            return statement.executeUpdate(Buff);
+        }
+        catch(Exception e) {
+            return -1;
+        }
     }
+
 
     /**  Получение данных из таблицы
      *
@@ -234,13 +297,14 @@ public class SqlTerminal implements SqlInterface
         }
     }
 
+
     /**  Удаление таблицы
      *
      *  @param tableName название таблицы
      *
      *  @return
-     *      true    - таблица удалена
-     *      false   - в процессе удаления произошла ошибка
+     *      true таблица удалена;
+     *      false в процессе удаления произошла ошибка
      */
     @Override
     public boolean delete(String tableName) throws SQLException {
@@ -253,27 +317,57 @@ public class SqlTerminal implements SqlInterface
         // отправление запроса в базу данных и вывод return
         try {
             statement.execute(Buff);
+            return true;
         }
         catch(Exception e) {
             return false;
         }
-
-        return true;
     }
 
+
+    /**  Удаление строк таблицы
+     *
+     *  @param tableName название таблицы
+     *  @param condition условие
+     *
+     *  @return (0 - ...) количество уделённых строк в базе данных;
+     *          -1 при удалении произошла ошибка
+     *
+     */
     @Override
-    public int deleteRows(String tableName, String condition) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public int deleteRows(String tableName, String[] condition) {
+
+        String Buff = "DELETE FROM " + tableName + " WHERE "; // переменная для формирования SQL запроса
+
+        // формирование запроса для условий
+        for(int i = 0; i < condition.length; i++) {
+            Buff += condition[i];
+            if(i < condition.length - 1)
+                Buff += " AND ";
+        }
+
+        // печать SQL запроса в консоль
+        if(printConsoleFlag)
+            System.out.println(Buff);
+
+        // отправление запроса в базу данных и вывод return
+        try {
+            return statement.executeUpdate(Buff);
+        }
+        catch(Exception e) {
+            return -1;
+        }
     }
+
 
     /**  Добавление столбца
      *
-     *  @param tableName   - название таблицы
-     *  @param column      - название и параметры поля
+     *  @param tableName название таблицы
+     *  @param column название поля и параметры
      *
      *  @return
-     *      true    - столбец добавлен;
-     *      false   - столбец не добавлен
+     *      true столбец добавлен;
+     *      false столбец не добавлен
      */
     @Override
     public boolean addColumn(String tableName, String[] column){
@@ -295,13 +389,13 @@ public class SqlTerminal implements SqlInterface
         // отправление запроса в базу данных и вывод return
         try {
             statement.execute(Buff);
+            return true;
         }
         catch(Exception e) {
             return false;
         }
-
-        return true;
     }
+
 
     @Override
     public void close() throws Exception {
@@ -309,7 +403,11 @@ public class SqlTerminal implements SqlInterface
         conn.close();
     }
 
-    // получение ссылки на единственный экземпляр класса SqlTerminal
+
+    /** Получение ссылки на экземпляр класса SqlTerminal
+     *
+     * @return ссылка на единственный экземпляр класса
+     */
     static public SqlTerminal getInstance() {
         if(instance == null)
             instance = new SqlTerminal();

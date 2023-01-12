@@ -29,6 +29,10 @@ public class Main {
             String[] columnAdd2 = {"id","INT"};
             System.out.println(dbTable.addColumn(name, columnAdd2));
 
+            String[] columnAdd3 = {"prod_type = 'RUS'"};
+            System.out.println(dbTable.deleteRows(name, columnAdd3));
+
+
             //dbTable.close();
         }
 
