@@ -7,6 +7,8 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
+
+        // запуск "spring web"
         SpringApplication.run(Main.class, args);
 
         SqlTerminal dbTable = SqlTerminal.getInstance();
@@ -17,8 +19,8 @@ public class Main {
             dbTable.connect("jdbc:postgresql://localhost:5432/postgres", "postgres", "postgres");
 
             dbTable.delete(name);
-            dbTable.create(name, fileToList.csvReadToList("opisanie_poley.csv"));
 
+            dbTable.create(name, fileToList.csvReadToList("opisanie_poley.csv"));
             dbTable.insert(name, columnsToAdd, fileToList.csvReadToList("soderjimoe_poley.csv"));
 
             String[] columnAdd1 = {"prod_type","INT"};

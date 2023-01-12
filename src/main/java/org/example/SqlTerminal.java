@@ -6,22 +6,35 @@ import java.util.List;
 
 public class SqlTerminal implements SqlInterface
 {
+    /** ссылка на единственный экземпляр класса SqlTerminal
+     */
     private static SqlTerminal instance = null;
+
     private Connection conn;
     private Statement statement;
-    private boolean printConsoleFlag = true; // true - печатать SQL запросы в консоль, false - не печатать
 
+    /** флаг печати SQL запросов в консоль
+     * true - печатать SQL запросы в консоль, false - не печатать
+     */
+    private boolean printConsoleFlag = true;
+
+    /** для реализации singletone конструктор класса находится в зоне доступа private
+     */
     private SqlTerminal() {
 
     }
 
-    @Override
-    /*  Подключение к базе данных
+    /**  Подключение к базе данных
      *
-     *  url      - ссылка на базу данных
-     *  username - имя учётной записи
-     *  password - пароль
+     *  @param url ссылка на базу данных
+     *  @param username имя учётной записи
+     *  @param password пароль
+     *
+     *  @return
+     *      true    - подключение успешно;
+     *      false   - при подключении произошла ошибка
      */
+    @Override
     public boolean connect(String url, String username, String password) {
         try {
             conn = DriverManager.getConnection(url, username, password);
@@ -33,15 +46,19 @@ public class SqlTerminal implements SqlInterface
         }
     }
 
-    @Override
-    /*  Создание таблицы в базе данных
+    /**  Создание таблицы в базе данных
      *
-     *  tableName - название таблицы
-     *  columns - список имён и параметров полей
+     *  @param tableName название таблицы
+     *  @param columns список имён и параметров полей
+     *
+     *  @return
+     *      true    - таблица создана;
+     *      false   - таблица не создана
      */
+    @Override
     public boolean create(String tableName, List<String[]> columns) {
-        String Buff = "CREATE TABLE IF NOT EXISTS " + tableName + " ("; // переменная для формирования SQL запроса
-        List<String> primaryKeyList = new ArrayList<>();                // список полей для добавления в primary key
+        String Buff = "CREATE TABLE " + tableName + " (";   // переменная для формирования SQL запроса
+        List<String> primaryKeyList = new ArrayList<>();    // список полей для добавления в primary key
 
         // формирование запроса для создания полей
         for(int i = 0; i < columns.size(); i++) {
@@ -77,6 +94,7 @@ public class SqlTerminal implements SqlInterface
         if(printConsoleFlag)
             System.out.println(Buff);
 
+        // отправление запроса в базу данных и вывод return
         try {
             statement.execute(Buff);
         }
@@ -87,13 +105,16 @@ public class SqlTerminal implements SqlInterface
         return true;
     }
 
-    @Override
-    /*  Добавление значений в базу данных
+    /**  Добавление значений в базу данных
      *
-     *  tableName   - название таблицы
-     *  columns     - массив полей в которые записываются данные
-     *  values      - список значений полей для добавления
+     *  @param tableName название таблицы
+     *  @param columns массив полей в которые записываются данные
+     *  @param values список значений полей для добавления
+     *
+     *  @return (0-...) количество успешно добавленных строк в базу данных;
+     *          -1 при добавлении значений произошла ошибка
      */
+    @Override
     public int insert(String tableName, String[] columns, List<String[]> values) {
         String Buff = "INSERT INTO " + tableName + " (" ;   // переменная для формирования SQL запроса
 
@@ -128,6 +149,7 @@ public class SqlTerminal implements SqlInterface
         if(printConsoleFlag)
             System.out.println(Buff);
 
+        // отправление запроса в базу данных и вывод return
         try {
             return statement.executeUpdate(Buff);
         }
@@ -146,13 +168,16 @@ public class SqlTerminal implements SqlInterface
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    /*  Получение данных из таблицы
+    /**  Получение данных из таблицы
      *
-     *  tableName   - название таблицы
-     *  targetCol   - массив полей которые будут возвращены
-     *  conditions  - список условий
+     *  @param tableName название таблицы
+     *  @param targetCol массив полей которые будут возвращены
+     *  @param conditions список условий
+     *
+     *  @return список массивов строк, где в каждом списке хранятся значения одной строки базы данных,
+     *  а в каждой строке хранится значение столбца
      */
+    @Override
     public List<String[]> select(String tableName, String[] targetCol, String[] conditions) {
         String Buff = "SELECT ";    // переменная для формирования SQL запроса
 
@@ -209,20 +234,31 @@ public class SqlTerminal implements SqlInterface
         }
     }
 
-    @Override
-    /*  Удаление таблицы
+    /**  Удаление таблицы
      *
-     *  tableName   - название таблицы
+     *  @param tableName название таблицы
+     *
+     *  @return
+     *      true    - таблица удалена
+     *      false   - в процессе удаления произошла ошибка
      */
+    @Override
     public boolean delete(String tableName) throws SQLException {
-        String Buff = "DROP TABLE IF EXISTS " + tableName + ";";
+        String Buff = "DROP TABLE IF EXISTS " + tableName + ";"; // переменная для формирования SQL запроса
 
+        // печать SQL запроса в консоль
         if(printConsoleFlag)
             System.out.println(Buff);
 
-        statement.execute(Buff);
+        // отправление запроса в базу данных и вывод return
+        try {
+            statement.execute(Buff);
+        }
+        catch(Exception e) {
+            return false;
+        }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -230,16 +266,16 @@ public class SqlTerminal implements SqlInterface
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    /*  Добавление столбца
+    /**  Добавление столбца
      *
-     *  tableName   - название таблицы
-     *  column      - название и параметры поля
+     *  @param tableName   - название таблицы
+     *  @param column      - название и параметры поля
      *
-     *  return:
-     *      true - столбец добавлен
-     *      false - столбец не добавлен
+     *  @return
+     *      true    - столбец добавлен;
+     *      false   - столбец не добавлен
      */
+    @Override
     public boolean addColumn(String tableName, String[] column){
         String Buff = "ALTER TABLE " + tableName + " ADD COLUMN ";
 
@@ -256,6 +292,7 @@ public class SqlTerminal implements SqlInterface
         if(printConsoleFlag)
             System.out.println(Buff);
 
+        // отправление запроса в базу данных и вывод return
         try {
             statement.execute(Buff);
         }
@@ -272,7 +309,7 @@ public class SqlTerminal implements SqlInterface
         conn.close();
     }
 
-    // Метод реализации singletone
+    // получение ссылки на единственный экземпляр класса SqlTerminal
     static public SqlTerminal getInstance() {
         if(instance == null)
             instance = new SqlTerminal();
