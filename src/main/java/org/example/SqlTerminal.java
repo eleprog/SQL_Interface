@@ -19,11 +19,9 @@ public class SqlTerminal implements SqlInterface  {
     private boolean printConsoleFlag = true;
 
 
-
     /** для реализации singletone конструктор класса находится в зоне доступа private
      */
     private SqlTerminal() { }
-
 
     /**  Подключение к базе данных
      *
@@ -46,7 +44,6 @@ public class SqlTerminal implements SqlInterface  {
             return false;
         }
     }
-
 
     /**  Создание таблицы в базе данных
      *
@@ -106,7 +103,6 @@ public class SqlTerminal implements SqlInterface  {
         }
     }
 
-
     /**  Добавление значений в базу данных
      *
      *  @param tableName название таблицы
@@ -161,62 +157,32 @@ public class SqlTerminal implements SqlInterface  {
     }
 
     /**
-     *
-     * @param tableName
-
-     * @param conditions
-     * @param values
-     * @return
+     * @param tableName название таблицы
+     * @param changeColumns выражение для обновления колонок в строке
+     * @param conditions условия для обновлнения
+     * @return (0 - ...) количество обновлённых строк;
+     *         -1 при обновлении значений произошла ошибка
      */
     @Override
-    public int updateRow(String tableName, String columns[], String[] values, String[] conditions) {
-
-        return 0;
-    }
-
-
-    @Override
-    public int updateColumns(String tableName, String[] changesColumns, String[] condition) {
-
-        //         tableName         changesColumns     conditions
-        // "UPDATE Customers SET ContactName='Juan' WHERE Country='Mexico'";
-
+    public int updateRow(String tableName, String[] changeColumns, String[] conditions) {
         String Buff = "UPDATE " + tableName + " SET ";    // переменная для формирования SQL запроса
 
-        for(int i = 0 ; i < changesColumns.length; i++) {
-            Buff += changesColumns[i];
-            if(i < changesColumns.length - 1)
+        // формирование запроса для обновления столбцов
+        for(int i = 0 ; i < changeColumns.length; i++) {
+            Buff += changeColumns[i];
+            if(i < changeColumns.length - 1)
                 Buff += ", ";
         }
 
-        /*
-
-        // формирование запроса для полей которые будут возвращены
-        if(targetCol == null)
-            Buff += "* ";
-        else {
-            for (int i = 0; i < targetCol.length; i++) {
-                Buff += targetCol[i];
-
-                if (i < targetCol.length - 1)
-                    Buff += ", ";
-                else
-                    Buff += " ";
-            }
-        }
-
-        // формирование запроса для условий
-        Buff += "FROM " + tableName + " WHERE ";
-        for(int i = 0; i < conditions.length; i++) {
+        // формирование запроса для условия обновления столбцов
+        Buff += " WHERE ";
+        for(int i = 0 ; i < conditions.length; i++) {
             Buff += conditions[i];
             if(i < conditions.length - 1)
                 Buff += " AND ";
-            else
-                Buff += ";";
         }
+        Buff += ";";
 
-
-*/
         // печать SQL запроса в консоль
         if(printConsoleFlag)
             System.out.println(Buff);
@@ -230,6 +196,41 @@ public class SqlTerminal implements SqlInterface  {
         }
     }
 
+    /**
+     * @param tableName название таблицы
+     * @param changeColumn выражение для обновления колонки
+     * @param conditions условия для обновлнения
+     * @return (0 - ...) количество обновлённых значений;
+     *         -1 при обновлении значений произошла ошибка
+     */
+    @Override
+    public int updateColumn(String tableName, String changeColumn, String[] conditions) {
+        String Buff = "UPDATE " + tableName + " SET ";    // переменная для формирования SQL запроса
+
+        // формирование запроса для обновления столбца
+        Buff += changeColumn;
+
+        // формирование запроса для условия обновления столбцов
+        Buff += " WHERE ";
+        for(int i = 0 ; i < conditions.length; i++) {
+            Buff += conditions[i];
+            if(i < conditions.length - 1)
+                Buff += " AND ";
+        }
+        Buff += ";";
+
+        // печать SQL запроса в консоль
+        if(printConsoleFlag)
+            System.out.println(Buff);
+
+        // отправление запроса в базу данных и вывод return
+        try {
+            return statement.executeUpdate(Buff);
+        }
+        catch(Exception e) {
+            return -1;
+        }
+    }
 
     /**  Получение данных из таблицы
      *
@@ -297,7 +298,6 @@ public class SqlTerminal implements SqlInterface  {
         }
     }
 
-
     /**  Удаление таблицы
      *
      *  @param tableName название таблицы
@@ -307,7 +307,7 @@ public class SqlTerminal implements SqlInterface  {
      *      false в процессе удаления произошла ошибка
      */
     @Override
-    public boolean delete(String tableName) throws SQLException {
+    public boolean delete(String tableName) {
         String Buff = "DROP TABLE IF EXISTS " + tableName + ";"; // переменная для формирования SQL запроса
 
         // печать SQL запроса в консоль
@@ -323,7 +323,6 @@ public class SqlTerminal implements SqlInterface  {
             return false;
         }
     }
-
 
     /**  Удаление строк таблицы
      *
@@ -358,7 +357,6 @@ public class SqlTerminal implements SqlInterface  {
             return -1;
         }
     }
-
 
     /**  Добавление столбца
      *
@@ -396,13 +394,11 @@ public class SqlTerminal implements SqlInterface  {
         }
     }
 
-
     @Override
     public void close() throws Exception {
         statement.close();
         conn.close();
     }
-
 
     /** Получение ссылки на экземпляр класса SqlTerminal
      *
