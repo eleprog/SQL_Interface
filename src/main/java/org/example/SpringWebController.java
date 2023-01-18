@@ -1,5 +1,6 @@
 package org.example;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +13,9 @@ import java.util.Map;
 @RestController
 public class SpringWebController {
     final String tableName = "shop";
-    final String[] columnsTrgt = new String[]{"prod_amount","prod_price","prod_discount"};
+    final String[] columnsTrgt = new String[]{"prod_name","prod_type","prod_amount","prod_price","prod_discount"};
 
-    @RequestMapping("/shopDB")
+    @GetMapping("/shopDB")
     public Map<Integer, productObj> greeting(@RequestParam(value="data", required=false, defaultValue="") String data) {
 
         String[] dataStr = data.split(" ");
@@ -33,5 +34,7 @@ public class SpringWebController {
 
         return map;
     }
+
+    //@PutMapping("/shopDB/{id}")
 
 }

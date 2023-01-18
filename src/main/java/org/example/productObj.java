@@ -1,16 +1,28 @@
 package org.example;
 
 public class productObj {
+    private String name     = null;
+    private String type     = null;
     private String amount   = null;
     private String price    = null;
     private String discount = null;
 
     productObj(String[] data) {
         if(data != null) {
-            amount      = data[0];
-            price       = data[1];
-            discount    = data[2];
+            name        = data[0];
+            type        = data[1];
+            amount      = data[2];
+            price       = data[3];
+            discount    = data[4];
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getAmount() {

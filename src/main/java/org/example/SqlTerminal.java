@@ -16,7 +16,7 @@ public class SqlTerminal implements SqlInterface  {
     /** флаг печати SQL запросов в консоль
      * true - печатать SQL запросы в консоль, false - не печатать
      */
-    private boolean printConsoleFlag = true;
+    private boolean printConsoleFlag = false;
 
 
     /** для реализации singletone конструктор класса находится в зоне доступа private
@@ -398,6 +398,14 @@ public class SqlTerminal implements SqlInterface  {
     public void close() throws Exception {
         statement.close();
         conn.close();
+    }
+
+    /** Настройка флага вывода на печать
+     *
+     * @param val значение для записи в printConsoleFlag
+     */
+    void setPrintConsoleFlag(boolean val) {
+        printConsoleFlag = val;
     }
 
     /** Получение ссылки на экземпляр класса SqlTerminal

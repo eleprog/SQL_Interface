@@ -15,6 +15,7 @@ public class Main {
         final String name = "shop";
         final String[] columnsToAdd = {"prod_name", "prod_type", "prod_amount", "prod_price", "prod_discount"};
 
+        dbTable.setPrintConsoleFlag(true);
 
         dbTable.connect("jdbc:postgresql://localhost:5432/postgres", "postgres", "postgres");
 
