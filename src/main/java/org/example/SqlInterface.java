@@ -9,9 +9,9 @@ public interface SqlInterface extends AutoCloseable
 
     boolean create(String tableName, List<String[]> columns);
 
-    int insert(String tableName, String columns[], List<String[]> values);
+    int insert(String tableName, String[] columns, List<String[]> values);
 
-    public int updateRow(String tableName, String[] changeColumns, String[] conditions);
+    int updateRow(String tableName, String[] changeColumns, String[] conditions);
 
     int updateColumn(String tableName, String changeColumn, String[] condition);
 
