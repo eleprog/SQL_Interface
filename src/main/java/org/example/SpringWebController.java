@@ -1,9 +1,7 @@
 package org.example;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +13,8 @@ public class SpringWebController {
     final String tableName = "shop";
     final String[] columnsTrgt = new String[]{"prod_name","prod_type","prod_amount","prod_price","prod_discount"};
 
-    @GetMapping("/shopDB")
-    public Map<Integer, productObj> greeting(@RequestParam(value="data", required=false, defaultValue="") String data) {
+    @GetMapping(value = "/shopDB")
+    public ResponseEntity<?> greeting(@RequestParam(value="data", required = false, defaultValue = "") String data) {
 
         String[] dataStr = data.split(" ");
         String[] columns = new String[dataStr.length / 2];
@@ -26,16 +24,34 @@ public class SpringWebController {
 
         List<String[]> tableRows = SqlTerminal.getInstance().select(tableName, columnsTrgt, columns);
 
-        Map<Integer, productObj> map = new HashMap();
+        Map<Integer, ProductObj> map = new HashMap();
 
-        if(tableRows != null)
-            for(int i = 0; i < tableRows.size(); i++)
-                map.put(i, new productObj(tableRows.get(i)));
-
-        return map;
+        if(tableRows != null) {
+            for (int i = 0; i < tableRows.size(); i++)
+                map.put(i, new ProductObj(tableRows.get(i)));
+            return ResponseEntity.ok(map);
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
+    @PostMapping("/shopDB")
+    public ResponseEntity<?> greeting2(@RequestBody ProductObj data) {
+        System.out.println(data);
+        List<String[]> rowAdd = new ArrayList<>();
 
-    //@PutMapping("/shopDB/{id}")
+        String[] str = new String[5];
+        str[0] = "'" + data.getName() + "'";
+        str[1] = "'" + data.getType() + "'";
+        str[2] = "'" + data.getAmount() + "'";
+        str[3] = String.valueOf(data.getPrice());
+        str[4] = String.valueOf(data.getDiscount());
 
+        rowAdd.add(str);
+        if(SqlTerminal.getInstance().insert(tableName, columnsTrgt, rowAdd) > 0)
+            return ResponseEntity.ok(data);
+
+        return ResponseEntity.notFound().build();
+    }
 }

@@ -2,7 +2,6 @@ package org.example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import java.sql.SQLException;
 
 @SpringBootApplication
 public class Main {
@@ -21,8 +20,8 @@ public class Main {
 
         dbTable.delete(name);
 
-        dbTable.create(name, fileToList.csvReadToList("opisanie_poley.csv"));
-        dbTable.insert(name, columnsToAdd, fileToList.csvReadToList("soderjimoe_poley.csv"));
+        dbTable.create(name, FileToList.csvReadToList("opisanie_poley.csv"));
+        dbTable.insert(name, columnsToAdd, FileToList.csvReadToList("soderjimoe_poley.csv"));
 
         String[] columnAdd1 = {"prod_type","INT"};
         System.out.println(dbTable.addColumn(name, columnAdd1));

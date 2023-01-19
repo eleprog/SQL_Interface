@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Класс для обработки .csv файлов
  */
-public class fileToList {
+public class FileToList {
 
     /** Преобразование файла в список массивов строк
      *

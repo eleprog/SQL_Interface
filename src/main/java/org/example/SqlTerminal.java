@@ -284,7 +284,7 @@ public class SqlTerminal implements SqlInterface  {
             while(resultInput.next()) {
                 String[] line = new String[len];
                 for (int j = 1; j <= len; j++)
-                    line[j - 1] = resultInput.getString(j);
+                    line[j - 1] = resultInput.getString(targetCol[j-1]);
                 resultOutput.add(line);
             }
 
