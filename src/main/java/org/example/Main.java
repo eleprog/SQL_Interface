@@ -29,6 +29,11 @@ public class Main {
         String[] columnAdd2 = {"id","INT"};
         System.out.println(dbTable.addColumn(name, columnAdd2));
 
+        //dbTable.deleteRows(name, new String[]{"prod_name = 'potato'", "prod_type = 'RUS'"});
+
         dbTable.updateColumn(name, "prod_amount = 'update'", new String[]{"prod_name = 'potato'","prod_type = 'RUS'"});
+        dbTable.updateColumn(name, "prod_amount = 'update'", new String[]{"prod_name = 'potato'","prod_type = 'TUR'"});
+
+
     }
 }

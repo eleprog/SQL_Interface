@@ -1,21 +1,21 @@
 package org.example;
 
 public class ProductObj {
-    private String name     = null;
-    private String type     = null;
-    private String amount   = null;
-    private Integer price    = null;
-    private Integer discount = null;
+    private String name;
+    private String type;
+    private String amount;
+    private Integer price;
+    private Integer discount;
 
-    /*ProductObj(String[] data) {
+    ProductObj(String[] data) {
         if(data != null) {
             name        = data[0];
             type        = data[1];
             amount      = data[2];
-            price       = data[3];
-            discount    = data[4];
+            price       = Integer.valueOf(data[3]);
+            discount    = Integer.valueOf(data[4]);
         }
-    }*/
+    }
 
     public ProductObj(String name, String type, String amount, Integer price, Integer discount) {
         this.name = name;
@@ -67,7 +67,7 @@ public class ProductObj {
 
     @Override
     public String toString() {
-        return "productObj{" +
+        return "productObj {" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", amount='" + amount + '\'' +

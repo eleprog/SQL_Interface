@@ -36,9 +36,8 @@ public class SpringWebController {
         }
     }
 
-    @PostMapping("/shopDB")
+    @PostMapping("/shopDB/insert")
     public ResponseEntity<?> greeting2(@RequestBody ProductObj data) {
-        System.out.println(data);
         List<String[]> rowAdd = new ArrayList<>();
 
         String[] str = new String[5];
@@ -52,6 +51,6 @@ public class SpringWebController {
         if(SqlTerminal.getInstance().insert(tableName, columnsTrgt, rowAdd) > 0)
             return ResponseEntity.ok(data);
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 }
